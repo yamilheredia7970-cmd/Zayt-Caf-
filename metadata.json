@@ -1,0 +1,6 @@
+{
+  "name": "Zayt Café — Specialty Coffee & Bakery",
+  "description": "Contemporary Mediterranean & Middle Eastern specialty coffeehouse and artisan bakery. Handcrafted espresso, slow-fermented sourdough, and regional botanical pastries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

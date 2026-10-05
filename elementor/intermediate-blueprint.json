@@ -1,0 +1,831 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "meta": {
+    "projectName": "Zayt Café",
+    "projectSubtitle": "Specialty Coffee & Artisan Bakery",
+    "targetPlatform": "WordPress + Elementor Pro (Flexbox Container Engine v3+)",
+    "generationTimestamp": "2026-10-05T09:25:00Z",
+    "sourceFramework": "React 19 + Tailwind v4 + TypeScript",
+    "conversionGoal": "High-fidelity visual & structural template for Elementor Page Builder"
+  },
+  "globalDesignTokens": {
+    "colorPalette": {
+      "primary": { "slug": "zayt-terracotta", "value": "#9E471D", "elementorRole": "primary" },
+      "primaryHover": { "slug": "zayt-terracotta-dark", "value": "#853A15" },
+      "secondary": { "slug": "zayt-olive", "value": "#4A5844", "elementorRole": "secondary" },
+      "secondaryLight": { "slug": "zayt-olive-light", "value": "#F0F4EE" },
+      "backgroundMain": { "slug": "zayt-limestone", "value": "#FAF7F2" },
+      "backgroundAlt": { "slug": "zayt-limestone-light", "value": "#FAF9F6" },
+      "surfaceWhite": { "slug": "zayt-surface", "value": "#FFFFFF" },
+      "surfaceSubtle": { "slug": "zayt-surface-subtle", "value": "#F4EFE6" },
+      "borderLight": { "slug": "zayt-border", "value": "rgba(36, 31, 28, 0.08)", "hexFallback": "#E7E5E4" },
+      "textMain": { "slug": "zayt-text-espresso", "value": "#241F1C", "elementorRole": "text" },
+      "textMuted": { "slug": "zayt-text-muted", "value": "#6E665E" },
+      "textSubtle": { "slug": "zayt-text-subtle", "value": "#A8A29E" },
+      "darkCanvas": { "slug": "zayt-dark-charcoal", "value": "#1C1816" },
+      "darkSurface": { "slug": "zayt-dark-stone", "value": "#1C1917" },
+      "whatsAppGreen": { "slug": "zayt-whatsapp", "value": "#25D366" },
+      "starAmber": { "slug": "zayt-amber", "value": "#FBBF24" }
+    },
+    "typography": {
+      "displaySerif": {
+        "family": "Playfair Display",
+        "fallback": "Georgia, serif",
+        "weights": [400, 600, 700],
+        "googleFontUrl": "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+      },
+      "bodySans": {
+        "family": "Plus Jakarta Sans",
+        "fallback": "system-ui, -apple-system, sans-serif",
+        "weights": [400, 500, 600, 700],
+        "googleFontUrl": "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      },
+      "arabicDisplayAndBody": {
+        "family": "Alexandria",
+        "fallback": "Noto Sans Arabic, sans-serif",
+        "weights": [400, 500, 600, 700],
+        "googleFontUrl": "https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&display=swap"
+      },
+      "codeMono": {
+        "family": "ui-monospace, SFMono-Regular, Menlo, Monaco, monospace"
+      }
+    },
+    "spacingScale": {
+      "sectionPaddingYDesktop": "96px",
+      "sectionPaddingYMobile": "64px",
+      "containerMaxWidth": "1280px",
+      "cardPadding": "28px",
+      "gapStandard": "24px",
+      "gapLarge": "48px"
+    },
+    "radii": {
+      "sm": "6px",
+      "md": "8px",
+      "lg": "12px",
+      "xl": "16px",
+      "pill": "9999px"
+    }
+  },
+  "responsiveBreakpoints": {
+    "desktop": { "minWidth": 1025, "containerPaddingX": "32px" },
+    "tablet": { "minWidth": 768, "maxWidth": 1024, "containerPaddingX": "24px" },
+    "mobile": { "maxWidth": 767, "containerPaddingX": "16px" }
+  },
+  "assetsRegistry": {
+    "images": [
+      {
+        "id": "img-hero-interior",
+        "name": "Zayt Cafe Honed Travertine Interior",
+        "source": "/src/assets/images/zayt_hero_interior_1791134628326.jpg",
+        "aspectRatio": "16:9",
+        "suggestedDimensions": { "width": 1600, "height": 900 },
+        "altEn": "Zayt Café warm minimalist interior with travertine espresso counter and arched limestone architecture",
+        "altAr": "أشعة الشمس تنعكس على أقواس الحجر الجيري وكونتر القهوة المصنوع من الترافرتين في مقهى زيت"
+      },
+      {
+        "id": "img-pistachio-latte",
+        "name": "Zayt Signature Pistachio Latte Product",
+        "source": "/src/assets/images/zayt_pistachio_latte_1791134643981.jpg",
+        "aspectRatio": "4:3",
+        "suggestedDimensions": { "width": 1200, "height": 900 },
+        "altEn": "Layered iced pistachio latte with crushed vibrant emerald pistachios on a stone pedestal",
+        "altAr": "لاتيه الفستق المثلج ذو الطبقات مع رشة من الفستق الحلبي الأخضر على قاعدة حجرية"
+      },
+      {
+        "id": "img-cardamom-pastry",
+        "name": "Artisanal Cardamom & Saffron Pastry",
+        "source": "/src/assets/images/zayt_cardamom_pastry_1791134660260.jpg",
+        "aspectRatio": "4:3",
+        "suggestedDimensions": { "width": 1200, "height": 900 },
+        "altEn": "Freshly baked flaky cardamom saffron buns on ceramic tableware with morning linen",
+        "altAr": "كعكات الهيل والزعفران المورقة المخبوزة طازجة على أوانٍ فخارية راقية"
+      },
+      {
+        "id": "img-zaatar-focaccia",
+        "name": "Wild Zaatar & Extra Virgin Olive Focaccia",
+        "source": "/src/assets/images/zayt_zaatar_focaccia_1791134672837.jpg",
+        "aspectRatio": "4:3",
+        "suggestedDimensions": { "width": 1200, "height": 900 },
+        "altEn": "Rustic sourdough focaccia topped with wild thyme and virgin olive oil",
+        "altAr": "خبز فوكاتشيا ريفي بالتخمير الطبيعي مزين بالزعتر البري وزيت الزيتون البكر"
+      },
+      {
+        "id": "img-terrace-exterior",
+        "name": "Zayt Courtyard Terrace",
+        "source": "/src/assets/images/zayt_terrace_exterior_1791134689840.jpg",
+        "aspectRatio": "4:3",
+        "suggestedDimensions": { "width": 1200, "height": 900 },
+        "altEn": "Quiet shaded Mediterranean outdoor cafe terrace with olive trees and modern dining chairs",
+        "altAr": "تراس خارجي هادئ ومظلل بأشجار الزيتون ومقاعد مريحة في الهواء الطلق"
+      }
+    ]
+  },
+  "sections": [
+    {
+      "sectionId": "section-header",
+      "elementorTemplateType": "Theme Builder Header",
+      "htmlTag": "header",
+      "title": "Sticky Global Header",
+      "containerSettings": {
+        "layout": "boxed",
+        "contentWidth": "1280px",
+        "position": "sticky",
+        "background": "#FAF7F2",
+        "backgroundOpacity": 0.95,
+        "backdropFilter": "blur(8px)",
+        "borderBottom": "1px solid rgba(36, 31, 28, 0.08)",
+        "height": "80px",
+        "flexDirection": "row",
+        "justifyContent": "space-between",
+        "alignItems": "center"
+      },
+      "widgets": [
+        {
+          "widgetId": "hdr-brand-logo",
+          "widgetType": "Heading",
+          "title": "Brand Wordmark",
+          "settings": {
+            "htmlTag": "a",
+            "link": { "url": "#home" },
+            "title": "Zayt Café",
+            "typography": { "family": "Playfair Display", "size": "28px", "weight": 700 },
+            "color": "#241F1C",
+            "customCss": "span.dot { color: #9E471D; }"
+          }
+        },
+        {
+          "widgetId": "hdr-nav-menu",
+          "widgetType": "Nav Menu",
+          "title": "Main Navigation",
+          "settings": {
+            "menuType": "Horizontal",
+            "items": [
+              { "label": "Home", "url": "#home" },
+              { "label": "Menu", "url": "#menu" },
+              { "label": "About Us", "url": "#about" },
+              { "label": "Gallery", "url": "#gallery" },
+              { "label": "Visit & Hours", "url": "#location" },
+              { "label": "Contact", "url": "#contact" }
+            ],
+            "typography": { "family": "Plus Jakarta Sans", "size": "14px", "weight": 500 },
+            "color": "#44403C",
+            "hoverColor": "#9E471D",
+            "activeUnderline": true,
+            "mobileBreakpoint": "tablet"
+          }
+        },
+        {
+          "widgetId": "hdr-language-switcher",
+          "widgetType": "WordPress Plugin / Shortcode / HTML",
+          "title": "Language Switcher (EN / AR)",
+          "elementorMappingNote": "In Elementor, replace React state toggle with WPML / Polylang language switcher widget or shortcode. Visually renders as pill container with 2 rounded toggles.",
+          "settings": {
+            "container": { "bg": "#F5F5F4", "border": "1px solid #E7E5E4", "radius": "9999px", "padding": "4px" }
+          }
+        },
+        {
+          "widgetId": "hdr-whatsapp-cta",
+          "widgetType": "Button",
+          "title": "Header WhatsApp CTA",
+          "settings": {
+            "text": "WhatsApp Order",
+            "url": "https://wa.me/97148882345?text=Hello%20Zayt%20Caf%C3%A9",
+            "target": "_blank",
+            "icon": "fab fa-whatsapp",
+            "backgroundColor": "#25D366",
+            "textColor": "#0C0A09",
+            "borderRadius": "8px",
+            "padding": "10px 16px",
+            "typography": { "family": "Plus Jakarta Sans", "size": "13px", "weight": 600 }
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "section-hero",
+      "htmlTag": "section",
+      "title": "Hero Section",
+      "anchor": "home",
+      "containerSettings": {
+        "layout": "boxed",
+        "contentWidth": "1280px",
+        "background": "#FAF7F2",
+        "paddingDesktop": { "top": "72px", "bottom": "112px", "left": "32px", "right": "32px" },
+        "paddingMobile": { "top": "48px", "bottom": "72px", "left": "16px", "right": "16px" },
+        "borderBottom": "1px solid rgba(36, 31, 28, 0.08)",
+        "flexDirection": "row",
+        "flexDirectionMobile": "column",
+        "gap": "56px",
+        "alignItems": "center"
+      },
+      "subContainers": [
+        {
+          "containerId": "hero-left-column",
+          "widthDesktop": "58%",
+          "widthMobile": "100%",
+          "flexDirection": "column",
+          "alignItems": "flex-start",
+          "widgets": [
+            {
+              "widgetId": "hero-kicker-pill",
+              "widgetType": "Container with Icon & Text",
+              "title": "Kicker Badge",
+              "settings": {
+                "background": "#FAF7F2",
+                "border": "1px solid #E7E5E4",
+                "borderRadius": "9999px",
+                "padding": "4px 12px",
+                "text": "Artisan Specialty Coffee & Bakery — Dubai",
+                "color": "#44403C",
+                "typography": { "family": "Plus Jakarta Sans", "size": "12px", "weight": 600, "transform": "uppercase" }
+              }
+            },
+            {
+              "widgetId": "hero-heading",
+              "widgetType": "Heading",
+              "title": "Main H1 Headline",
+              "settings": {
+                "htmlTag": "h1",
+                "title": "Where Specialty Coffee Meets <span style=\"color: #9E471D; font-style: italic;\">Mediterranean Warmth</span>",
+                "typography": { "family": "Playfair Display", "sizeDesktop": "56px", "sizeMobile": "36px", "lineHeight": 1.12, "weight": 600 },
+                "color": "#241F1C",
+                "textWrap": "balance"
+              }
+            },
+            {
+              "widgetId": "hero-description",
+              "widgetType": "Text Editor",
+              "title": "Hero Value Proposition",
+              "settings": {
+                "content": "<p>Single-origin rare roasts from Yemen and Ethiopia, slow-fermented 48-hour artisan sourdough, and regional botanicals woven into every cup and golden morning pastry.</p>",
+                "typography": { "family": "Plus Jakarta Sans", "sizeDesktop": "18px", "sizeMobile": "16px", "lineHeight": 1.6 },
+                "color": "#57534E",
+                "maxWidth": "620px"
+              }
+            },
+            {
+              "widgetId": "hero-button-group",
+              "widgetType": "Container (Button Group)",
+              "title": "Dual Call to Action",
+              "settings": { "flexDirection": "row", "gap": "14px", "wrap": "wrap" },
+              "childWidgets": [
+                {
+                  "widgetId": "hero-btn-menu",
+                  "widgetType": "Button",
+                  "settings": {
+                    "text": "Explore Menu",
+                    "url": "#menu",
+                    "backgroundColor": "#9E471D",
+                    "hoverBackgroundColor": "#853A15",
+                    "textColor": "#FFFFFF",
+                    "borderRadius": "8px",
+                    "padding": "14px 26px",
+                    "typography": { "family": "Plus Jakarta Sans", "size": "15px", "weight": 600 },
+                    "icon": "fas fa-arrow-right"
+                  }
+                },
+                {
+                  "widgetId": "hero-btn-whatsapp",
+                  "widgetType": "Button",
+                  "settings": {
+                    "text": "Order on WhatsApp",
+                    "url": "https://wa.me/97148882345?text=Hello%20Zayt%20Caf%C3%A9%2C%20I%20would%20like%20to%20inquire%20about%20your%20menu%2C%20table%20availability%2C%20or%20a%20preorder.",
+                    "target": "_blank",
+                    "backgroundColor": "#25D366",
+                    "hoverBackgroundColor": "#20BD5A",
+                    "textColor": "#0C0A09",
+                    "borderRadius": "8px",
+                    "padding": "14px 26px",
+                    "typography": { "family": "Plus Jakarta Sans", "size": "15px", "weight": 600 },
+                    "icon": "fab fa-whatsapp"
+                  }
+                }
+              ]
+            },
+            {
+              "widgetId": "hero-trust-bar",
+              "widgetType": "Text Editor / Icon List",
+              "title": "Quiet Trust Markers",
+              "settings": {
+                "borderTop": "1px solid #E7E5E4",
+                "paddingTop": "24px",
+                "content": "<span style=\"color:#9E471D; font-weight:700;\">✓</span> Ethical Single Origins &nbsp;·&nbsp; <span style=\"color:#9E471D; font-weight:700;\">✓</span> 48h Slow-Fermented &nbsp;·&nbsp; 📍 Alserkal Arts District",
+                "typography": { "family": "Plus Jakarta Sans", "size": "12px", "weight": 500 },
+                "color": "#78716C"
+              }
+            }
+          ]
+        },
+        {
+          "containerId": "hero-right-media",
+          "widthDesktop": "42%",
+          "widthMobile": "100%",
+          "position": "relative",
+          "borderRadius": "16px",
+          "overflow": "hidden",
+          "boxShadow": "0 10px 25px -5px rgba(0,0,0,0.08)",
+          "border": "1px solid #E7E5E4",
+          "widgets": [
+            {
+              "widgetId": "hero-main-image",
+              "widgetType": "Image",
+              "settings": {
+                "image": { "url": "/src/assets/images/zayt_hero_interior_1791134628326.jpg" },
+                "aspectRatio": "4:5",
+                "objectFit": "cover",
+                "width": "100%",
+                "height": "100%"
+              }
+            },
+            {
+              "widgetId": "hero-image-caption-card",
+              "widgetType": "Container (Absolute Overlay)",
+              "settings": {
+                "position": "absolute",
+                "bottom": "16px",
+                "left": "16px",
+                "right": "16px",
+                "background": "rgba(255, 255, 255, 0.92)",
+                "backdropFilter": "blur(8px)",
+                "borderRadius": "12px",
+                "padding": "16px",
+                "border": "1px solid rgba(255, 255, 255, 0.6)"
+              },
+              "childWidgets": [
+                {
+                  "widgetType": "Heading",
+                  "settings": { "title": "Zayt Café · Al Quoz", "typography": { "size": "11px", "weight": 700, "transform": "uppercase" }, "color": "#9E471D" }
+                },
+                {
+                  "widgetType": "Text Editor",
+                  "settings": { "content": "Natural travertine arches, acoustic calm & shaded olive trees", "typography": { "size": "13px", "weight": 500 }, "color": "#1C1917" }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "section-features",
+      "htmlTag": "section",
+      "title": "Four Pillars / Why Choose Us",
+      "containerSettings": {
+        "layout": "boxed",
+        "contentWidth": "1280px",
+        "background": "#FAF7F2",
+        "paddingDesktop": { "top": "96px", "bottom": "96px" },
+        "borderBottom": "1px solid rgba(36, 31, 28, 0.08)"
+      },
+      "subContainers": [
+        {
+          "containerId": "features-heading-block",
+          "widgets": [
+            {
+              "widgetType": "Heading",
+              "settings": {
+                "kicker": "Our Craft & Values",
+                "title": "The Four Pillars of Zayt",
+                "subtitle": "From high-altitude micro-lots to slow-ferment hearth ovens, we honor the ritual of slow gathering and uncompromised ingredients."
+              }
+            }
+          ]
+        },
+        {
+          "containerId": "features-grid-container",
+          "layout": "grid",
+          "columnsDesktop": 4,
+          "columnsTablet": 2,
+          "columnsMobile": 1,
+          "gap": "24px",
+          "repeatedCardPattern": {
+            "container": { "background": "#FFFFFF", "borderRadius": "12px", "border": "1px solid #E7E5E4", "padding": "28px" },
+            "items": [
+              {
+                "index": "01.",
+                "icon": "fas fa-coffee",
+                "title": "Ethical Single Origins",
+                "description": "Direct trade green beans from Yemen, Ethiopia, and Colombia, roasted in small batches to preserve terroir and nuanced aromatics."
+              },
+              {
+                "index": "02.",
+                "icon": "fas fa-bread-slice",
+                "title": "48-Hour Slow Fermentation",
+                "description": "Artisan sourdough and viennoiserie baked at dawn every morning using unbleached stoneground flours and cultured French butter."
+              },
+              {
+                "index": "03.",
+                "icon": "fas fa-sparkles",
+                "title": "Levantine Botanical Flavors",
+                "description": "Authentic regional infusions: wild mountain zaatar, cold-pressed olive oils, green cardamom, orange blossom, and pistachio."
+              },
+              {
+                "index": "04.",
+                "icon": "fas fa-handshake",
+                "title": "Sanctuary of Hospitality",
+                "description": "Natural travertine stone, shaded olive trees, curated acoustics, and genuine warmth designed for lingering conversations."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "section-featured-menu",
+      "htmlTag": "section",
+      "title": "Featured Signatures Showcase",
+      "containerSettings": {
+        "layout": "boxed",
+        "contentWidth": "1280px",
+        "background": "#FAF9F6",
+        "paddingDesktop": { "top": "96px", "bottom": "96px" },
+        "borderBottom": "1px solid rgba(36, 31, 28, 0.08)"
+      },
+      "subContainers": [
+        {
+          "containerId": "featured-menu-grid",
+          "layout": "grid",
+          "columnsDesktop": 4,
+          "columnsTablet": 2,
+          "columnsMobile": 1,
+          "gap": "24px",
+          "repeatedWidgetTemplate": "ProductCardWidgetTemplate",
+          "featuredProducts": [
+            "prod-pistachio-latte",
+            "prod-yemeni-v60",
+            "prod-cardamom-bun",
+            "prod-zaatar-focaccia"
+          ]
+        },
+        {
+          "containerId": "featured-menu-footer-cta",
+          "alignment": "center",
+          "paddingTop": "40px",
+          "widgets": [
+            {
+              "widgetType": "Button",
+              "settings": {
+                "text": "View Complete Menu",
+                "url": "#menu",
+                "variant": "outline",
+                "borderColor": "#D6D3D1",
+                "textColor": "#1C1917",
+                "borderRadius": "8px",
+                "padding": "12px 24px"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "section-full-menu",
+      "htmlTag": "section",
+      "title": "Complete Categorized Menu",
+      "anchor": "menu",
+      "elementorArchitectureNote": "In WordPress/Elementor Pro, this section can be built using the Elementor Loop Grid widget connected to a Custom Post Type 'zayt_menu_item' with 'menu_category' taxonomy, or a structured Elementor Container hierarchy with repeated Product Card templates.",
+      "containerSettings": {
+        "layout": "boxed",
+        "contentWidth": "1280px",
+        "background": "#FFFFFF",
+        "paddingDesktop": { "top": "96px", "bottom": "96px" }
+      },
+      "categoryTabs": [
+        { "slug": "all", "labelEn": "All Items", "labelAr": "جميع الأصناف" },
+        { "slug": "specialty-coffee", "labelEn": "Specialty Coffee", "labelAr": "القهوة المختصة" },
+        { "slug": "hot-drinks", "labelEn": "Hot Drinks", "labelAr": "مشروبات ساخنة" },
+        { "slug": "cold-drinks", "labelEn": "Cold Drinks", "labelAr": "مشروبات باردة" },
+        { "slug": "pastries", "labelEn": "Pastries", "labelAr": "المعجنات الفاخرة" },
+        { "slug": "bakery", "labelEn": "Bakery", "labelAr": "المخبوزات الحرفية" },
+        { "slug": "breakfast", "labelEn": "Breakfast", "labelAr": "الفطور المتوسطي" },
+        { "slug": "desserts", "labelEn": "Desserts", "labelAr": "الحلويات" }
+      ],
+      "productsTotalCount": 18,
+      "subContainers": [
+        {
+          "containerId": "menu-products-grid",
+          "layout": "grid",
+          "columnsDesktop": 3,
+          "columnsTablet": 2,
+          "columnsMobile": 1,
+          "gap": "28px"
+        },
+        {
+          "containerId": "menu-custom-order-banner",
+          "background": "#FAF7F2",
+          "borderRadius": "12px",
+          "border": "1px solid #E7E5E4",
+          "padding": "28px",
+          "flexDirection": "row",
+          "justifyContent": "space-between",
+          "alignItems": "center"
+        }
+      ]
+    },
+    {
+      "sectionId": "section-about",
+      "htmlTag": "section",
+      "title": "Brand Story & Craft",
+      "anchor": "about",
+      "containerSettings": {
+        "layout": "boxed",
+        "contentWidth": "1280px",
+        "background": "#FAF7F2",
+        "paddingDesktop": { "top": "96px", "bottom": "96px" },
+        "flexDirection": "row",
+        "flexDirectionMobile": "column",
+        "gap": "64px",
+        "alignItems": "center"
+      },
+      "subContainers": [
+        {
+          "containerId": "about-visual-stats-grid",
+          "widthDesktop": "50%",
+          "layout": "grid",
+          "columns": 2,
+          "gap": "16px",
+          "cards": [
+            { "type": "image", "asset": "img-cardamom-pastry", "aspect": "4:5", "borderRadius": "12px" },
+            { "type": "metric", "number": "48h", "label": "Cold Fermentation", "bg": "#FFFFFF" },
+            { "type": "metric", "number": "100%", "label": "Direct-Trade Micro Lots", "bg": "#FFFFFF" },
+            { "type": "image", "asset": "img-zaatar-focaccia", "aspect": "4:5", "borderRadius": "12px" }
+          ]
+        },
+        {
+          "containerId": "about-narrative",
+          "widthDesktop": "50%",
+          "flexDirection": "column",
+          "widgets": [
+            { "widgetType": "Heading", "settings": { "kicker": "Our Story & Philosophy", "title": "Zayt: An Homage to Mediterranean Soil & Slow Gathering" } },
+            { "widgetType": "Text Editor", "settings": { "content": "The name Zayt (زيت) comes from the ancient olive tree and extra virgin olive oil — the lifeblood of Mediterranean and Levantine culture..." } },
+            { "widgetType": "3-Column Values Row", "settings": { "values": ["Purity of Origin", "Artisan Roasting", "Soulful Hospitality"] } }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "section-gallery",
+      "htmlTag": "section",
+      "title": "Visual Atmosphere Gallery",
+      "anchor": "gallery",
+      "containerSettings": {
+        "layout": "boxed",
+        "contentWidth": "1280px",
+        "background": "#FFFFFF",
+        "paddingDesktop": { "top": "96px", "bottom": "96px" }
+      },
+      "galleryLayout": "Asymmetric 12-Column CSS Grid",
+      "items": [
+        { "spanDesktop": 8, "aspect": "16:10", "asset": "img-hero-interior", "title": "Sunlit Archway Interior", "category": "Atmosphere" },
+        { "spanDesktop": 4, "aspect": "1:1", "asset": "img-pistachio-latte", "title": "Signature Pistachio Extraction", "category": "Specialty Bar" },
+        { "spanDesktop": 4, "aspect": "1:1", "asset": "img-cardamom-pastry", "title": "Morning Cardamom Viennoiserie", "category": "Artisan Bakery" },
+        { "spanDesktop": 4, "aspect": "1:1", "asset": "img-zaatar-focaccia", "title": "Wild Zaatar Sourdough Focaccia", "category": "Oven Heritage" },
+        { "spanDesktop": 4, "aspect": "1:1", "asset": "img-terrace-exterior", "title": "Olive Garden Courtyard Terrace", "category": "Outdoor Living" }
+      ]
+    },
+    {
+      "sectionId": "section-testimonials",
+      "htmlTag": "section",
+      "title": "Guest Reviews & Testimonials",
+      "containerSettings": {
+        "layout": "boxed",
+        "contentWidth": "1280px",
+        "background": "#FAF9F6",
+        "paddingDesktop": { "top": "96px", "bottom": "96px" }
+      },
+      "subContainers": [
+        {
+          "containerId": "testimonials-grid",
+          "layout": "grid",
+          "columnsDesktop": 3,
+          "columnsTablet": 2,
+          "columnsMobile": 1,
+          "gap": "28px",
+          "items": [
+            {
+              "name": "Layla Al-Mansoor",
+              "role": "Architecture & Design Critic",
+              "source": "Architectural Digest Middle East",
+              "rating": 5,
+              "quote": "Zayt achieves what few modern cafes manage: genuine warmth without the pretense. The Pistachio Latte and Cardamom Morning Bun are simply unmatched."
+            },
+            {
+              "name": "Julian Vance",
+              "role": "Specialty Coffee Q-Grader",
+              "source": "Specialty Coffee Reviewer",
+              "rating": 5,
+              "quote": "Their extraction consistency on the Yemeni Haraaz V60 is extraordinary. Clear jasmine florals and dried stone fruits in every clean sip."
+            },
+            {
+              "name": "Tariq El-Husseini",
+              "role": "Al Quoz Creative Director",
+              "source": "Daily Regular Patron",
+              "rating": 5,
+              "quote": "The zaatar focaccia with cold-pressed olive oil has become my daily morning ritual. A modern masterpiece of Mediterranean comfort."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "section-location",
+      "htmlTag": "section",
+      "title": "Location & Opening Hours",
+      "anchor": "location",
+      "containerSettings": {
+        "layout": "boxed",
+        "contentWidth": "1280px",
+        "background": "#FAF7F2",
+        "paddingDesktop": { "top": "96px", "bottom": "96px" },
+        "flexDirection": "row",
+        "flexDirectionMobile": "column",
+        "gap": "40px"
+      },
+      "subContainers": [
+        {
+          "containerId": "location-details-col",
+          "widthDesktop": "42%",
+          "flexDirection": "column",
+          "gap": "24px",
+          "widgets": [
+            {
+              "widgetType": "AddressCard",
+              "address": "Warehouse 42, Alserkal Arts District, Al Quoz 1, Dubai, UAE",
+              "phone": "+971 4 888 2345",
+              "email": "hello@zaytcafe.com",
+              "buttonUrl": "https://maps.google.com/?q=Alserkal+Avenue+Dubai"
+            },
+            {
+              "widgetType": "OpeningHoursCard",
+              "rows": [
+                { "days": "Monday – Thursday", "hours": "7:30 AM – 10:00 PM" },
+                { "days": "Friday", "hours": "7:30 AM – 11:30 PM" },
+                { "days": "Saturday – Sunday", "hours": "8:00 AM – 11:30 PM", "highlight": true }
+              ]
+            },
+            {
+              "widgetType": "ParkingInfoCallout",
+              "text": "Valet parking available at Main Avenue Entrance. Ample public street parking within 2 minutes walk."
+            }
+          ]
+        },
+        {
+          "containerId": "location-map-col",
+          "widthDesktop": "58%",
+          "minHeight": "420px",
+          "borderRadius": "16px",
+          "overflow": "hidden",
+          "border": "1px solid #E7E5E4",
+          "widgets": [
+            {
+              "widgetType": "HTML / Google Maps Embed",
+              "embedUrl": "https://maps.google.com/maps?q=Alserkal+Avenue+Dubai&t=&z=15&ie=UTF8&iwloc=&output=embed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "section-contact",
+      "htmlTag": "section",
+      "title": "Contact & Inquiries",
+      "anchor": "contact",
+      "containerSettings": {
+        "layout": "boxed",
+        "contentWidth": "1280px",
+        "background": "#FFFFFF",
+        "paddingDesktop": { "top": "96px", "bottom": "96px" },
+        "flexDirection": "row",
+        "flexDirectionMobile": "column",
+        "gap": "48px"
+      },
+      "subContainers": [
+        {
+          "containerId": "contact-channels-col",
+          "widthDesktop": "42%",
+          "widgets": [
+            { "widgetType": "DirectChannelsInfoCard" },
+            {
+              "widgetType": "WhatsAppPriorityCard",
+              "title": "Prefer an instant reply via WhatsApp?",
+              "ctaUrl": "https://wa.me/97148882345"
+            }
+          ]
+        },
+        {
+          "containerId": "contact-form-col",
+          "widthDesktop": "58%",
+          "elementorMappingNote": "Maps directly to Elementor Pro 'Form' widget. Field keys: name (text), email (email), phone (tel), topic (select), message (textarea). Actions after submit: Email, Webhook or Submissions database.",
+          "widgets": [
+            {
+              "widgetType": "Elementor Pro Form Widget",
+              "fields": [
+                { "type": "text", "label": "Full Name", "required": true },
+                { "type": "email", "label": "Email Address", "required": true },
+                { "type": "tel", "label": "Phone Number", "required": false },
+                { "type": "select", "label": "Inquiry Topic", "options": ["General Cafe Inquiry", "Table or Gathering Reservation", "Private Events & Catering", "Wholesale Coffee Beans & Bakery"] },
+                { "type": "textarea", "label": "Your Message", "required": true }
+              ],
+              "button": { "text": "Send Message", "bg": "#9E471D", "color": "#FFFFFF", "icon": "fas fa-paper-plane" }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "section-cta-banner",
+      "htmlTag": "section",
+      "title": "High-Conversion WhatsApp Pre-Order Banner",
+      "containerSettings": {
+        "layout": "boxed",
+        "contentWidth": "896px",
+        "background": "#1C1917",
+        "paddingDesktop": { "top": "80px", "bottom": "80px" },
+        "textAlign": "center"
+      },
+      "widgets": [
+        {
+          "widgetType": "Heading",
+          "settings": {
+            "title": "Exceptional Brews & Warm Viennoiserie Await You",
+            "typography": { "family": "Playfair Display", "size": "44px", "weight": 600 },
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "widgetType": "Text Editor",
+          "settings": {
+            "content": "Pre-order for express counter collection or message us to arrange reserved seating under our shaded olive trees.",
+            "color": "#D6D3D1"
+          }
+        },
+        {
+          "widgetType": "Button Group",
+          "buttons": [
+            { "text": "Pre-Order on WhatsApp", "url": "https://wa.me/97148882345", "bg": "#25D366" },
+            { "text": "Browse All Items", "url": "#menu", "variant": "outline", "color": "#E7E5E4" }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "section-footer",
+      "elementorTemplateType": "Theme Builder Footer",
+      "htmlTag": "footer",
+      "title": "Global Footer",
+      "containerSettings": {
+        "layout": "boxed",
+        "contentWidth": "1280px",
+        "background": "#1C1816",
+        "paddingDesktop": { "top": "64px", "bottom": "48px" },
+        "borderTop": "1px solid #292524"
+      },
+      "columnsDesktop": 4,
+      "columns": [
+        { "title": "Brand & Socials", "width": "35%" },
+        { "title": "Quick Navigation", "width": "18%" },
+        { "title": "Opening Times", "width": "22%" },
+        { "title": "The Zayt Journal Newsletter", "width": "25%" }
+      ]
+    },
+    {
+      "sectionId": "section-floating-whatsapp",
+      "title": "Floating WhatsApp Global Widget",
+      "elementorMappingNote": "Positioned via Elementor Container > Advanced > Positioning: Fixed. Bottom 24px, Right 24px (Left 24px in RTL), z-index 999. Link points to wa.me with prefilled message.",
+      "widgets": [
+        {
+          "widgetType": "Button / Icon Button",
+          "settings": {
+            "url": "https://wa.me/97148882345",
+            "icon": "fab fa-whatsapp",
+            "bg": "#25D366",
+            "shape": "circle",
+            "size": "56px"
+          }
+        }
+      ]
+    }
+  ],
+  "runtimeTranslationToElementorNotes": {
+    "supportedNatively": [
+      "Flexbox container layout, direction, gaps, and responsive breakpoints",
+      "Typography families (Playfair Display, Plus Jakarta Sans, Alexandria)",
+      "Colors and border-radius on cards, buttons, badges, and overlays",
+      "Google Maps iframe embed",
+      "WhatsApp wa.me direct URL triggers",
+      "Contact form fields and submit styling"
+    ],
+    "requiresWordPressPlugin": [
+      {
+        "frontendFeature": "Instant EN/AR LTR/RTL toggle",
+        "recommendedSolution": "Polylang or WPML with automatic dir='rtl' stylesheet switching",
+        "note": "Elementor natively mirrors flex containers when WordPress locale is set to Arabic (is_rtl())."
+      },
+      {
+        "frontendFeature": "Client-side category filter without reload",
+        "recommendedSolution": "Elementor Pro Loop Grid with Taxonomy Filter widget, or JetSmartFilters / Search & Filter Pro plugin.",
+        "note": "Provides seamless category switching for menu items."
+      }
+    ]
+  }
+}
