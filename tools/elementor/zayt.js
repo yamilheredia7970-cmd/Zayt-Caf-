@@ -1,35 +1,111 @@
 /* Zayt Café — behaviour that Elementor Free has no widget for. Plain JS, no dependencies.
-   Replaces: scroll-spy nav, mobile drawer, menu category filter, contact form validation, newsletter.
-   Event delegation + a one-time init flag, so it is safe if Elementor re-renders the HTML widget. */
+   Replaces: language switch, scroll-spy nav, mobile drawer, menu category filter, contact form, newsletter.
+   Event delegation + a one-time init flag, so it is safe if Elementor re-renders the HTML widget.
+
+   ZAYT_CFG (prepended by the build):
+     mode  "single"    one language per page (language comes from the page itself)
+           "bilingual" both languages on one page; <html data-zayt-lang> decides which is shown
+     lang  initial language for "single"
+     paths {en:"/", ar:"/ar/"}   URLs used for pushState / detection in "bilingual"
+     sfx   {en:"", ar:"-ar"}     suffix of the DOM ids / anchors of each language
+     titles                      <title> per language                                           */
 (function () {
   var d = document;
   var root = d.documentElement;
-  // ZAYT_LANG is prepended by the build ("en" | "ar"). On a Polylang/WPML site WordPress sets dir itself.
-  if (typeof ZAYT_LANG !== 'undefined' && ZAYT_LANG === 'ar') {
-    root.setAttribute('dir', 'rtl');
-    root.setAttribute('lang', 'ar');
+  var C = window.ZAYT_CFG || { mode: 'single', lang: 'en', paths: { en: '/', ar: '/ar/' }, sfx: { en: '', ar: '' } };
+  var SECTIONS = ['home', 'menu', 'about', 'gallery', 'location', 'contact'];
+
+  function norm(p) { return (p || '/').replace(/\/+$/, '') || '/'; }
+  function sfx(lang) { return (C.sfx && C.sfx[lang]) || ''; }
+  function langFromPath() {
+    if (C.mode !== 'bilingual') return C.lang;
+    return norm(location.pathname) === norm(C.paths.ar) ? 'ar' : 'en';
   }
+  function apply(lang) {
+    // CSS (zayt.css) shows/hides the .zayt-l-en / .zayt-l-ar blocks from this attribute.
+    root.setAttribute('data-zayt-lang', lang);
+    root.setAttribute('lang', lang);
+    root.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+    if (C.titles && C.titles[lang]) d.title = C.titles[lang];
+  }
+
+  var current = langFromPath();
+  apply(current); // runs while the page is still being parsed, so there is no flash of the wrong language
+
   if (root.getAttribute('data-zayt-init')) return;
   root.setAttribute('data-zayt-init', '1');
 
-  // ----- mobile drawer -----
+  // ----- scroll-spy (same rule as App.tsx: last section whose top - 120px is above scrollY) -----
+  function sectionKey() {
+    var y = window.scrollY;
+    for (var i = SECTIONS.length - 1; i >= 0; i--) {
+      var el = d.getElementById(SECTIONS[i] + sfx(current));
+      if (el && y >= el.getBoundingClientRect().top + y - 120) return SECTIONS[i];
+    }
+    return 'home';
+  }
+  function spy() {
+    var key = sectionKey();
+    d.querySelectorAll('.zayt-nav a, .zayt-drawer nav a').forEach(function (a) {
+      a.classList.toggle('is-active', a.getAttribute('href') === '#' + key + sfx(current));
+    });
+  }
+  window.addEventListener('scroll', spy, { passive: true });
+
+  // ----- language switch (bilingual mode) -----
+  function closeDrawers() {
+    d.querySelectorAll('.zayt-drawer.is-open').forEach(function (dr) { dr.classList.remove('is-open'); });
+    d.querySelectorAll('.zayt-burger').forEach(function (b) {
+      b.setAttribute('aria-expanded', 'false');
+      b.setAttribute('aria-label', b.getAttribute('data-label-open'));
+    });
+  }
+  // Which section is at the top of the screen, and how far through it the reader is (0..1).
+  function anchorAtTop() {
+    for (var i = SECTIONS.length - 1; i >= 0; i--) {
+      var el = d.getElementById(SECTIONS[i] + sfx(current));
+      if (!el) continue;
+      var r = el.getBoundingClientRect();
+      if (r.top <= 1) return { key: SECTIONS[i], progress: Math.min(1, Math.max(0, -r.top / (r.height || 1))) };
+    }
+    return { key: 'home', progress: 0 };
+  }
+  function switchTo(lang, push) {
+    if (lang === current) return;
+    var at = anchorAtTop(); // the two languages have different section heights, so keep the same section and the same progress through it
+    closeDrawers();
+    current = lang;
+    apply(lang);
+    if (push) history.pushState({ zaytLang: lang }, '', C.paths[lang]);
+    var to = d.getElementById(at.key + sfx(lang));
+    var y = 0;
+    if (to) { var r = to.getBoundingClientRect(); y = Math.max(0, r.top + window.scrollY + at.progress * r.height); }
+    window.scrollTo({ top: y, behavior: 'instant' });
+    spy();
+  }
+  window.addEventListener('popstate', function () { if (C.mode === 'bilingual') switchTo(langFromPath(), false); });
+
   d.addEventListener('click', function (e) {
+    var sw = e.target.closest('[data-zayt-switch]');
+    if (sw && C.mode === 'bilingual') {
+      e.preventDefault();
+      switchTo(sw.getAttribute('data-zayt-switch'), true);
+      return;
+    }
+
+    // ----- mobile drawer (scoped to the header that contains the button) -----
     var burger = e.target.closest('.zayt-burger');
-    var drawer = d.querySelector('.zayt-drawer');
-    if (burger && drawer) {
+    if (burger) {
+      var drawer = burger.closest('.zayt-header').querySelector('.zayt-drawer');
       var open = !drawer.classList.contains('is-open');
       drawer.classList.toggle('is-open', open);
       burger.setAttribute('aria-expanded', open ? 'true' : 'false');
       burger.setAttribute('aria-label', open ? burger.getAttribute('data-label-close') : burger.getAttribute('data-label-open'));
       return;
     }
-    if (drawer && e.target.closest('.zayt-drawer a')) {
-      drawer.classList.remove('is-open');
-      var b = d.querySelector('.zayt-burger');
-      if (b) { b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-label', b.getAttribute('data-label-open')); }
-    }
+    if (e.target.closest('.zayt-drawer a')) closeDrawers();
 
-    // ----- menu category filter -----
+    // ----- menu category filter (scoped to the menu section that contains the bar) -----
     var cat = e.target.closest('[data-zayt-filter] button[data-cat]');
     if (cat) {
       var bar = cat.closest('[data-zayt-filter]');
@@ -39,9 +115,8 @@
         btn.classList.toggle('is-active', on);
         btn.setAttribute('aria-pressed', on ? 'true' : 'false');
       });
-      d.querySelectorAll('.zayt-menu-item').forEach(function (card) {
-        var show = slug === 'all' || card.classList.contains('zayt-cat-' + slug);
-        card.style.display = show ? '' : 'none';
+      bar.closest('.zayt-sec').querySelectorAll('.zayt-menu-item').forEach(function (card) {
+        card.style.display = slug === 'all' || card.classList.contains('zayt-cat-' + slug) ? '' : 'none';
       });
       return;
     }
@@ -53,7 +128,7 @@
     }
   });
 
-  // ----- contact form (client-side only, like the React original) -----
+  // ----- contact form + newsletter (client-side only, like the React original) -----
   d.addEventListener('submit', function (e) {
     var form = e.target;
     if (form.matches('.zayt-form form')) {
@@ -87,25 +162,10 @@
       }, 600);
     } else if (form.matches('.zayt-news')) {
       e.preventDefault();
-      var inp2 = form.elements['email'];
-      if (!inp2.value.trim()) return;
+      if (!form.elements['email'].value.trim()) return;
       form.closest('.zayt-news-wrap').classList.add('is-done');
     }
   });
 
-  // ----- scroll-spy (same rule as App.tsx: last section whose top - 120px is above scrollY) -----
-  var ids = ['home', 'menu', 'about', 'gallery', 'location', 'contact'];
-  function spy() {
-    var y = window.scrollY, current = null;
-    for (var i = ids.length - 1; i >= 0; i--) {
-      var el = d.getElementById(ids[i]);
-      if (el && y >= el.offsetTop - 120) { current = ids[i]; break; }
-    }
-    if (!current) current = 'home';
-    d.querySelectorAll('.zayt-nav a, .zayt-drawer nav a').forEach(function (a) {
-      a.classList.toggle('is-active', a.getAttribute('href') === '#' + current);
-    });
-  }
-  window.addEventListener('scroll', spy, { passive: true });
   if (d.readyState === 'loading') d.addEventListener('DOMContentLoaded', spy); else spy();
 })();

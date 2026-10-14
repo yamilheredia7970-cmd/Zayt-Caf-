@@ -9,7 +9,7 @@ import { ICONS } from './icons.mjs';
 let seed = 'zayt';
 let counter = 0;
 const used = new Set();
-export function resetIds(s) { seed = s; counter = 0; used.clear(); }
+export function resetIds(s, keepUsed = false) { seed = s; counter = 0; if (!keepUsed) used.clear(); }
 export function nextId() {
   let id;
   do { id = createHash('sha1').update(`${seed}:${counter++}`).digest('hex').slice(0, 7); } while (used.has(id));
@@ -79,6 +79,7 @@ function typo(s, o, prefix = 'typography_') {
 
 function common(s, o) {
   if (o.id) { s._element_id = o.id; }
+  if (o.title) s._title = o.title; // label shown in Elementor's Navigator
   if (o.cls) { s._css_classes = o.cls; s.css_classes = o.cls; }
   if (o.mt !== undefined || o.mb !== undefined || o.mx !== undefined) {
     const mt = arr(o.mt ?? 0), mb = arr(o.mb ?? 0);
@@ -120,6 +121,11 @@ export function text(html, o = {}) {
 }
 
 export function htmlw(html, o = {}) {
+  // Label code widgets so an editor can tell them apart from native ones in the Navigator.
+  if (!o.title) {
+    const m = html.match(/class="(?:zayt-)?([a-z0-9-]+)/i);
+    o = { ...o, title: `[HTML] ${m ? m[1].replace(/^zayt-/, '') : 'snippet'}` };
+  }
   const s = { html };
   common(s, o);
   return widget('html', s);

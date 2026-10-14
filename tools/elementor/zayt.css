@@ -31,6 +31,12 @@ html { scroll-behavior: smooth; }
 .zayt-balance { text-wrap: balance; }
 
 .zayt-rtl { direction: rtl; }
+
+/* ---------- bilingual page: one language visible at a time (<html data-zayt-lang> is set by zayt.js) ----------
+   Default (no JS / before JS) = English. Both stay visible inside the Elementor editor so each can be edited. */
+html:not([data-zayt-lang="ar"]) body:not(.elementor-editor-active) .zayt-l-ar,
+html[data-zayt-lang="ar"] body:not(.elementor-editor-active) .zayt-l-en { display: none !important; }
+body.elementor-editor-active .zayt-header.e-con { position: relative; }
 .zayt-rtl, .zayt-rtl :is(input, select, textarea, button, a, p, span, h1, h2, h3, h4, li, strong, small, label, div) { font-family: var(--zayt-ar); }
 .zayt-rtl .zayt-mono { font-family: var(--zayt-mono); }
 .zayt-rtl .zayt-display { font-weight: 700; }
@@ -54,12 +60,6 @@ html { scroll-behavior: smooth; }
   .zayt .zayt-cols--lg3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .zayt .zayt-cols--lg4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
-.zayt .zayt-gap-24-28 { gap: 24px !important; } .zayt .zayt-gap-24-32 { gap: 24px !important; }
-.zayt .zayt-gap-20-24 { gap: 20px !important; }
-@media (min-width: 640px) {
-  .zayt .zayt-gap-24-28 { gap: 28px !important; } .zayt .zayt-gap-24-32 { gap: 32px !important; }
-  .zayt .zayt-gap-20-24 { gap: 24px !important; }
-}
 /* gallery: 1 col, then 12-col from md */
 @media (min-width: 768px) {
   .zayt .zayt-gallery { display: grid !important; grid-template-columns: repeat(12, minmax(0, 1fr)); }
@@ -69,10 +69,7 @@ html { scroll-behavior: smooth; }
 @media (min-width: 768px) { .zayt .zayt-foot-grid { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1024px) { .zayt .zayt-foot-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); } }
 /* about: inner 2-col image/stat grid */
-.zayt .zayt-about-imgs { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px !important; }
-.zayt .zayt-about-col { display: flex !important; flex-direction: column; gap: 16px !important; }
-.zayt .zayt-about-col--b { padding-top: 24px !important; }
-@media (min-width: 640px) { .zayt .zayt-about-col--b { padding-top: 40px !important; } }
+.zayt .zayt-about-imgs { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); } /* gaps + offsets are native controls */
 
 /* ---------- visibility helpers ---------- */
 @media (max-width: 639px) { .zayt .zayt-hide-xs { display: none !important; } }

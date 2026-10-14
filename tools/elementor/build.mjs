@@ -51,19 +51,25 @@ const SEC_BORDER = { w: dim(0, 0, 1, 0), color: 'rgba(231,229,228,0.7)' };
 const css = readFileSync(join(HERE, 'zayt.css'), 'utf8');
 const js = readFileSync(join(HERE, 'zayt.js'), 'utf8');
 
-function build(L) {
+// opts.bilingual: this build is one half of a two-language page (see assemble()).
+function build(L, opts = {}) {
   const ar = L === 'ar';
+  const bi = !!opts.bilingual;
+  const sfx = bi && ar ? '-ar' : '';            // DOM ids stay unique when both languages live on one page
+  const A = (h) => h + sfx;                     // '#menu' -> '#menu-ar'
+  const langCls = bi ? ` zayt-l-${L}` : '';     // hidden/shown by CSS from <html data-zayt-lang>
+  const NT = (name) => (bi ? `${L.toUpperCase()} · ${name}` : name); // Navigator label
   const t = (en, a) => (ar ? a : en);
   const rtl = ar ? ' zayt-rtl' : '';
   setLang(L);
-  resetIds(`zayt-home-${L}`);
+  resetIds(`zayt-home-${L}`, !!opts.keepIds);
   const wa = (name) => buildWhatsAppUrl(name, L);
 
   // top-level section shell: outer container carries the full-bleed background, boxed inner = max-w-7xl
   // py = [desktop, tablet, mobile] vertical padding; pyB overrides the bottom when it differs (hero)
-  const section = ({ id, bg, py, pyB = py, border = true, boxed = 1216, tag = 'section', cls = '', align, kids }) =>
+  const section = ({ id, title, bg, py, pyB = py, border = true, boxed = 1216, tag = 'section', cls = '', align, kids }) =>
     box({
-      top: true, boxed, tag, id, cls: `zayt${rtl} ${cls}`.trim(), bg, align,
+      top: true, boxed, tag, id: id && A(id), title, cls: `zayt${rtl} zayt-sec${langCls} ${cls}`.trim(), bg, align,
       border: border ? SEC_BORDER : undefined,
       pad: [[py[0], 32, pyB[0], 32], [py[1], 24, pyB[1], 24], [py[2], 16, pyB[2], 16]],
     }, kids);
@@ -83,32 +89,24 @@ function build(L) {
   }, kids);
   const padCard = (a, b) => [[a, a, a, a], [a, a, a, a], [b, b, b, b]];
 
-  // ================================================================ assets (CSS + JS + fonts)
-  const assets = box({ top: true, cls: 'zayt-assets', gap: 0 }, [
-    htmlw(
-      `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>` +
-      `<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">` +
-      `<style id="zayt-css">\n${css}\n</style>\n<script id="zayt-js">\nvar ZAYT_LANG=${JSON.stringify(L)};\n${js}\n</script>`,
-    ),
-  ]);
-
   // ================================================================ header
-  const navLinks = (cls) => NAV_LINKS.map((l) => `<a href="${l.href}">${esc(l.label[L])}</a>`).join('');
-  const langSwitch = (extra = '') =>
-    `<div class="zayt-lang ${extra}" role="group" aria-label="Language selection">${icon('globe', { size: 14 })}` +
-    `<a href="${LANG_URLS.en}" hreflang="en" lang="en"${ar ? '' : ' class="is-current" aria-current="true"'}>English</a>` +
-    `<a href="${LANG_URLS.ar}" hreflang="ar" lang="ar"${ar ? ' class="is-current" aria-current="true"' : ''}>العربية</a></div>`;
+  const navLinks = (cls) => NAV_LINKS.map((l) => `<a href="${A(l.href)}">${esc(l.label[L])}</a>`).join('');
+  // Bilingual page: the links keep real hrefs (work without JS) and carry data-zayt-switch, which zayt.js turns into an in-page switch.
+  const langSwitch = (extra = '') => {
+    const sw = (code, label) => `<a href="${LANG_URLS[code]}" hreflang="${code}" lang="${code}"${bi ? ` data-zayt-switch="${code}"` : ''}${L === code ? ' class="is-current" aria-current="true"' : ''}>${label}</a>`;
+    return `<div class="zayt-lang ${extra}" role="group" aria-label="Language selection">${icon('globe', { size: 14 })}${sw('en', 'English')}${sw('ar', 'العربية')}</div>`;
+  };
   const waGeneral = wa();
   const waCta = t('WhatsApp Order', 'اطلب عبر واتساب');
 
   const header = box({
-    top: true, boxed: 1216, tag: 'header', cls: `zayt zayt-header${rtl}`, bg: 'rgba(250,247,242,0.95)',
+    top: true, boxed: 1216, tag: 'header', title: NT('Header'), cls: `zayt zayt-header zayt-sec${langCls}${rtl}`, bg: 'rgba(250,247,242,0.95)',
     border: { w: dim(0, 0, 1, 0), color: 'rgba(231,229,228,0.8)' },
     pad: [[0, 32, 0, 32], [0, 24, 0, 24], [0, 16, 0, 16]],
     dir: 'row', justify: 'space-between', align: 'center', gap: 16,
   }, [
     heading(ar ? BRAND_CONFIG.nameAr : BRAND_CONFIG.nameEn, {
-      tag: 'div', url: '#home', role: 'display', size: [30, 30, 24], weight: 700, lh: [1.2, 1.2, 1.333], ls: -0.025, color: '#1C1917', cls: 'zayt-brand zayt-display',
+      tag: 'div', url: A('#home'), role: 'display', size: [30, 30, 24], weight: 700, lh: [1.2, 1.2, 1.333], ls: -0.025, color: '#1C1917', cls: 'zayt-brand zayt-display',
     }),
     htmlw(`<nav class="zayt-nav" aria-label="Main Navigation">${navLinks()}</nav>`),
     box({ cls: 'zayt-header-actions', dir: 'row', align: 'center', justify: 'flex-end', gap: 12 }, [
@@ -141,7 +139,7 @@ function build(L) {
   };
   const heroImg = img('img:heroInterior');
   const hero = section({
-    id: 'home', bg: undefined, border: true, py: [72, 56, 32], pyB: [128, 96, 64],
+    id: 'home', title: NT('Hero'), bg: undefined, border: true, py: [72, 56, 32], pyB: [128, 96, 64],
     kids: [box({ cls: 'zayt-g12', dir: 'row', dirT: 'column', dirM: 'column', align: 'center', gap: [56, 40, 40] }, [
       box({ cls: 'zayt-span-7', w: 58.33, wT: 100, wM: 100, align: 'flex-start' }, [
         htmlw(`<div class="zayt-pill"><i aria-hidden="true"></i><span>${esc(heroCopy.kicker)}</span></div>`, { mb: 20 }),
@@ -150,7 +148,7 @@ function build(L) {
         }),
         text(`<p>${esc(heroCopy.desc)}</p>`, { size: [20, 18, 16], lh: 1.625, color: '#57534E', mb: 32, cls: 'zayt-mw-672' }),
         box({ dir: 'row', wrap: true, align: 'center', gap: 14, mar: [0, 0, 40, 0] }, [
-          button(heroCopy.ctaMenu, { url: '#menu', size: 'lg', icon: ar ? 'fas fa-arrow-left' : 'fas fa-arrow-right', iconEnd: true, cls: 'zayt-full-xs' }),
+          button(heroCopy.ctaMenu, { url: A('#menu'), size: 'lg', icon: ar ? 'fas fa-arrow-left' : 'fas fa-arrow-right', iconEnd: true, cls: 'zayt-full-xs' }),
           button(heroCopy.ctaWa, { url: waGeneral, external: true, variant: 'whatsapp', size: 'lg', icon: 'fab fa-whatsapp', cls: 'zayt-full-xs zayt-ic20' }),
         ]),
         htmlw(
@@ -174,15 +172,15 @@ function build(L) {
 
   // ================================================================ features
   const features = section({
-    bg: '#FAF7F2', py: PY, kids: [
+    title: NT('Features'), bg: '#FAF7F2', py: PY, kids: [
       sectionHead(
         t('Our Craft & Values', 'فلسفتنا في الجودة'),
         t('The Four Pillars of Zayt', 'أربعة أركان تصنع تجربة مقهى زيت'),
         t('From high-altitude micro-lots to slow-ferment hearth ovens, we honor the ritual of slow gathering and uncompromised ingredients.',
           'من مزارع البن المرتفعة إلى أفران التخمير البطيء، نلتزم بأعلى معايير الإتقان مع لمسة من الدفء والضيافة المتوسطية.'),
       ),
-      box({ cls: 'zayt-cols zayt-cols--md2 zayt-cols--lg4', gap: 24 }, FEATURES.map((f, i) =>
-        card({ pad: padCard(32, 24) }, [
+      box({ title: NT('Features grid'), cls: 'zayt-cols zayt-cols--md2 zayt-cols--lg4', gap: 24 }, FEATURES.map((f, i) =>
+        card({ pad: padCard(32, 24), title: f.title[L] }, [
           htmlw(`<div class="zayt-feat-top"><div class="zayt-feat-icon">${icon(f.iconName, { size: 24, stroke: 1.5 })}</div><span class="zayt-feat-num">0${i + 1}.</span></div>`, { mb: 20 }),
           heading(f.title[L], { tag: 'h3', role: 'display', size: 20, weight: 600, lh: 1.375, color: '#1C1917', mb: 10, cls: 'zayt-display' }),
           text(`<p>${esc(f.description[L])}</p>`, { size: 14, lh: 1.625, color: '#57534E' }),
@@ -198,7 +196,7 @@ function build(L) {
       ? htmlw(`<span class="zayt-badge zayt-badge--${BADGE_TYPES.includes(p.badge.type) ? p.badge.type : 'popular'}">${esc(p.badge[L])}</span>`, { cls: 'zayt-badge-wrap' })
       : null;
     return box({
-      cls: `zayt-card zayt-product ${extra}`.trim(), bg: '#FFFFFF', border: BORDER, radius: 12, shadow: SHADOW.xs, overflow: 'hidden',
+      title: name, cls: `zayt-card zayt-product ${extra}`.trim(), bg: '#FFFFFF', border: BORDER, radius: 12, shadow: SHADOW.xs, overflow: 'hidden',
     }, [
       box({ cls: 'zayt-media' }, [image(img(p.image), { alt: name }), badge]),
       box({ cls: 'zayt-card-body', gap: 16, justify: 'space-between', pad: [[24, 24, 24, 24], [24, 24, 24, 24], [20, 20, 20, 20]] }, [
@@ -221,16 +219,16 @@ function build(L) {
   // ================================================================ featured menu
   const featuredItems = PRODUCTS.filter((p) => p.isFeatured).slice(0, 4);
   const featured = section({
-    bg: '#FAF9F6', py: PY, kids: [
+    title: NT('Featured menu'), bg: '#FAF9F6', py: PY, kids: [
       sectionHead(
         t('Signatures & Favorites', 'أصناف مميزة'),
         t('Most Celebrated Creations', 'مختارات الموسم الأكثر طلباً'),
         t('Our guest favorites that define the spirit of Zayt — from stone-ground pistachio latte to wild mountain zaatar sourdough.',
           'أطباق ومشروبات ابتكرناها لتكون بصمة مقهى زيت، تُحضر يومياً بشغف وأجود المكونات الطبيعية.'),
       ),
-      box({ cls: 'zayt-cols zayt-cols--sm2 zayt-cols--lg4 zayt-gap-24-28', gap: 24, mar: [0, 0, 48, 0] }, featuredItems.map((p) => productCard(p))),
+      box({ title: NT('Featured products grid'), cls: 'zayt-cols zayt-cols--sm2 zayt-cols--lg4', gap: [28, 28, 24], mar: [0, 0, 48, 0] }, featuredItems.map((p) => productCard(p))),
       box({ dir: 'row', justify: 'center' }, [
-        button(t('View Complete Menu', 'عرض القائمة الكاملة'), { url: '#menu', variant: 'outline', size: 'md', icon: ar ? 'fas fa-arrow-left' : 'fas fa-arrow-right', iconEnd: true }),
+        button(t('View Complete Menu', 'عرض القائمة الكاملة'), { url: A('#menu'), variant: 'outline', size: 'md', icon: ar ? 'fas fa-arrow-left' : 'fas fa-arrow-right', iconEnd: true }),
       ]),
     ],
   });
@@ -241,7 +239,7 @@ function build(L) {
     MENU_CATEGORIES.map((c, i) => `<button type="button" data-cat="${c.id}" class="${i === 0 ? 'is-active' : ''}" aria-pressed="${i === 0}">${esc(c.label[L])}</button>`).join('') +
     `</div>`;
   const menu = section({
-    id: 'menu', bg: '#FFFFFF', py: PY, kids: [
+    id: 'menu', title: NT('Menu'), bg: '#FFFFFF', py: PY, kids: [
       sectionHead(
         t('The Artisan Menu', 'القائمة الحرفية'),
         t('Explore Our Food & Beverage Menu', 'استكشف أصناف المقهى والمخبز'),
@@ -249,7 +247,7 @@ function build(L) {
           'جميع أصنافنا تُحضر يومياً في مقهانا باستخدام أفضل حبوب البن المحمصة والدقيق غير المبيض والزبدة النقية.'),
       ),
       htmlw(filterBar),
-      box({ cls: 'zayt-cols zayt-cols--sm2 zayt-cols--lg3 zayt-gap-24-28', gap: 24 },
+      box({ title: NT('Menu grid'), cls: 'zayt-cols zayt-cols--sm2 zayt-cols--lg3', gap: [28, 28, 24] },
         PRODUCTS.map((p) => productCard(p, `zayt-menu-item zayt-cat-${p.category}`))),
       box({
         bg: '#FAF7F2', border: BORDER, radius: 12, shadow: SHADOW.xs, mar: [56, 0, 0, 0],
@@ -275,13 +273,13 @@ function build(L) {
     ['heart-handshake', t('Soulful Hospitality', 'كرم الترحيب'), t('A warm sanctuary of natural travertine and shaded greenery designed to linger.', 'مساحة مريحة مصممة لتشعر وكأنك في بيتك مع كل زيارة.')],
   ];
   const about = section({
-    id: 'about', bg: '#FAF7F2', py: PY, kids: [box({ cls: 'zayt-g12', dir: 'row', dirT: 'column', dirM: 'column', align: 'center', gap: [64, 48, 48] }, [
-      box({ cls: 'zayt-span-6 zayt-about-imgs', w: 50, wT: 100, wM: 100, dir: 'row' }, [
-        box({ cls: 'zayt-about-col' }, [
+    id: 'about', title: NT('About'), bg: '#FAF7F2', py: PY, kids: [box({ cls: 'zayt-g12', dir: 'row', dirT: 'column', dirM: 'column', align: 'center', gap: [64, 48, 48] }, [
+      box({ title: NT('About images'), cls: 'zayt-span-6 zayt-about-imgs', w: 50, wT: 100, wM: 100, dir: 'row', gap: 16 }, [
+        box({ gap: 16 }, [
           aboutImg('img:cardamomPastry', 'Zayt artisan cardamom and saffron morning buns on handcrafted ceramic plate'),
           stat('48h', t('Cold Fermentation', 'تخمير بطيء للعجين')),
         ]),
-        box({ cls: 'zayt-about-col zayt-about-col--b' }, [
+        box({ gap: 16, pad: [[40, 0, 0, 0], [40, 0, 0, 0], [24, 0, 0, 0]] }, [
           stat('100%', t('Direct-Trade Micro Lots', 'بن بمصدر مباشر ومسؤول')),
           aboutImg('img:zaatarFocaccia', 'Freshly baked focaccia with wild zaatar and cold-pressed extra virgin olive oil'),
         ]),
@@ -308,15 +306,15 @@ function build(L) {
 
   // ================================================================ gallery
   const gallery = section({
-    id: 'gallery', bg: '#FFFFFF', py: PY, kids: [
+    id: 'gallery', title: NT('Gallery'), bg: '#FFFFFF', py: PY, kids: [
       sectionHead(
         t('Visual Atmosphere', 'معرض الصور'),
         t('Moments of Craft & Ambiance', 'لقطات من تفاصيل وحياة المقهى'),
         t('An editorial window into daily life at Zayt — morning sunlight filtering through limestone, steaming cups, and golden viennoiserie.',
           'جولة بصرية بين أركان مقهانا: ضوء الصباح الطبيعي، رائحة البن المحمص، والمخبوزات الذهبية الطازجة.'),
       ),
-      box({ cls: 'zayt-gallery zayt-gap-20-24', gap: 20 }, GALLERY_ITEMS.map((g, i) => box({
-        cls: `zayt-gal zayt-media ${i === 0 ? 'zayt-gal-8 zayt-ar-1610' : 'zayt-gal-4 zayt-ar-11'}`, radius: 12, border: BORDER, shadow: SHADOW.xs, overflow: 'hidden', bg: '#F5F5F4',
+      box({ title: NT('Gallery grid'), cls: 'zayt-gallery', gap: [24, 24, 20] }, GALLERY_ITEMS.map((g, i) => box({
+        title: g.title[L], cls: `zayt-gal zayt-media ${i === 0 ? 'zayt-gal-8 zayt-ar-1610' : 'zayt-gal-4 zayt-ar-11'}`, radius: 12, border: BORDER, shadow: SHADOW.xs, overflow: 'hidden', bg: '#F5F5F4',
       }, [
         image(img(g.image), { alt: g.alt[L] }),
         htmlw(`<div class="zayt-gal-cap ${i === 0 ? 'zayt-gal-cap--lg' : ''}"><span class="k">${esc(g.category[L])}</span><span class="t">${esc(g.title[L])}</span></div>`, { cls: 'zayt-gal-cap-wrap' }),
@@ -328,15 +326,15 @@ function build(L) {
   const stars = (n) => `<div class="zayt-stars" role="img" aria-label="${n} out of 5 stars">${[0, 1, 2, 3, 4].map((i) =>
     i < n ? icon('star', { size: 16, fill: '#FBBF24', color: '#FBBF24' }) : icon('star', { size: 16, color: '#D6D3D1' })).join('')}</div>`;
   const testimonials = section({
-    bg: '#FAF9F6', py: PY, kids: [
+    title: NT('Testimonials'), bg: '#FAF9F6', py: PY, kids: [
       sectionHead(
         t('Guest Reviews & Praise', 'آراء الضيوف والنقاد'),
         t('Words from Our Community', 'ماذا يقول رواد مقهى زيت عنا'),
         t('Reflections from food writers, specialty coffee Q-graders, and design professionals who make Zayt their daily retreat.',
           'انطباعات وتجارب كتاب التصميم، خبراء القهوة، وعشاق المخبوزات الحرفية الذين جعلوا من زيت وجهتهم المفضلة.'),
       ),
-      box({ cls: 'zayt-cols zayt-cols--md3 zayt-gap-24-32', gap: 24 }, TESTIMONIALS.map((x) =>
-        card({ pad: padCard(32, 24), justify: 'space-between' }, [
+      box({ title: NT('Testimonials grid'), cls: 'zayt-cols zayt-cols--md3', gap: [32, 32, 24] }, TESTIMONIALS.map((x) =>
+        card({ pad: padCard(32, 24), justify: 'space-between', title: x.name[L] }, [
           box({}, [
             htmlw(stars(x.rating), { mb: 16 }),
             text(`<p>“${esc(x.content[L])}”</p>`, { role: 'display', size: [18, 18, 16], lh: 1.625, weight: 400, italic: true, color: '#292524', mb: 24, cls: 'zayt-display' }),
@@ -355,7 +353,7 @@ function build(L) {
     OPENING_HOURS.map((r) => `<li class="${r.isToday ? 'is-today' : ''}"><div class="d"><span>${esc(r.days[L])}</span>${r.isToday ? `<span class="zayt-today">${t('Today', 'اليوم')}</span>` : ''}</div><span class="h">${esc(r.hours[L])}</span></li>`).join('') +
     `</ul><p>${esc(t('Kitchen and bakery last orders are taken 60 minutes before closing.', 'المطبخ يقدم آخر طلبات الإفطار والمخبوزات قبل الإغلاق بساعة واحدة.'))}</p>`;
   const location = section({
-    id: 'location', bg: '#FAF7F2', py: PY, kids: [
+    id: 'location', title: NT('Location'), bg: '#FAF7F2', py: PY, kids: [
       sectionHead(
         t('Visit & Opening Times', 'الموقع وساعات الزيارة'),
         t('Find Us at Alserkal Arts District', 'زورونا في حي السركال للفنون'),
@@ -408,17 +406,17 @@ function build(L) {
   const formHtml =
     `<div class="zayt-form"><form novalidate data-msg-required="${esc(F.req)}" data-msg-email="${esc(F.badEmail)}" data-msg-sending="${esc(F.sending)}">` +
     `<div><h3>${esc(F.title)}</h3><p class="sub">${esc(F.sub)}</p></div>` +
-    `<div class="row first"><div><label for="contact-name">${esc(F.name)} <i>*</i></label><input id="contact-name" name="name" type="text" placeholder="${esc(F.namePh)}">${errBox('name')}</div>` +
-    `<div><label for="contact-email">${esc(F.email)} <i>*</i></label><input id="contact-email" name="email" type="email" placeholder="name@example.com">${errBox('email')}</div></div>` +
-    `<div class="row"><div><label for="contact-phone">${esc(F.phone)}</label><input id="contact-phone" name="phone" type="tel" placeholder="+971 50 123 4567"></div>` +
-    `<div><label for="contact-topic">${esc(F.topic)}</label><select id="contact-topic" name="topic">${F.topics.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join('')}</select></div></div>` +
-    `<div><label for="contact-message">${esc(F.message)} <i>*</i></label><textarea id="contact-message" name="message" rows="4" placeholder="${esc(F.messagePh)}"></textarea>${errBox('message')}</div>` +
+    `<div class="row first"><div><label for="contact-name${sfx}">${esc(F.name)} <i>*</i></label><input id="contact-name${sfx}" name="name" type="text" placeholder="${esc(F.namePh)}">${errBox('name')}</div>` +
+    `<div><label for="contact-email${sfx}">${esc(F.email)} <i>*</i></label><input id="contact-email${sfx}" name="email" type="email" placeholder="name@example.com">${errBox('email')}</div></div>` +
+    `<div class="row"><div><label for="contact-phone${sfx}">${esc(F.phone)}</label><input id="contact-phone${sfx}" name="phone" type="tel" placeholder="+971 50 123 4567"></div>` +
+    `<div><label for="contact-topic${sfx}">${esc(F.topic)}</label><select id="contact-topic${sfx}" name="topic">${F.topics.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join('')}</select></div></div>` +
+    `<div><label for="contact-message${sfx}">${esc(F.message)} <i>*</i></label><textarea id="contact-message${sfx}" name="message" rows="4" placeholder="${esc(F.messagePh)}"></textarea>${errBox('message')}</div>` +
     `<div style="padding-top:8px"><button type="submit" class="zayt-hbtn zayt-hbtn--primary zayt-hbtn--md zayt-hbtn--full zayt-hbtn--sm-auto"><span>${esc(F.submit)}</span>${icon('send', { size: 16 })}</button></div></form>` +
     `<div class="zayt-success"><div class="ok">${icon('circle-check', { size: 32 })}</div><h3>${esc(F.okTitle)}</h3><p>${esc(F.okText)}</p>` +
     `<button type="button" class="zayt-hbtn zayt-hbtn--outline zayt-hbtn--sm" data-zayt-again>${esc(F.again)}</button></div></div>`;
   const chan = (ic, label, val) => `<div>${icon(ic, { size: 16 })}<div><small>${esc(label)}</small>${val}</div></div>`;
   const contact = section({
-    id: 'contact', bg: '#FFFFFF', py: PY, kids: [
+    id: 'contact', title: NT('Contact'), bg: '#FFFFFF', py: PY, kids: [
       sectionHead(
         t('Get in Touch', 'تواصل معنا'),
         t('Connect with the Zayt Team', 'نسعد دائماً باستقبال رسائلكم واستفساراتكم'),
@@ -450,7 +448,7 @@ function build(L) {
 
   // ================================================================ CTA banner
   const cta = section({
-    bg: '#1C1917', py: [80, 80, 64], border: false, boxed: 960, align: 'center', cls: 'zayt-cta', kids: [
+    title: NT('CTA banner'), bg: '#1C1917', py: [80, 80, 64], border: false, boxed: 960, align: 'center', cls: 'zayt-cta', kids: [
       htmlw(`<div class="zayt-cta-pill">${icon('coffee', { size: 14 })}<span>${esc(t('Begin Your Morning Ritual with Zayt', 'ابدأ طقس يومك مع زيت'))}</span></div>`, { mb: 16 }),
       heading(t('Exceptional Brews & Warm Viennoiserie Await You', 'قهوة استثنائية ومخبوزات دافئة بانتظارك اليوم'), {
         tag: 'h2', role: 'display', size: [48, 36, 30], weight: 600, lh: [1, 1.111, 1.2], ls: -0.025, color: '#FFFFFF', align: 'center', mb: 20, cls: 'zayt-display zayt-balance',
@@ -460,7 +458,7 @@ function build(L) {
       }),
       box({ dir: 'row', wrap: true, align: 'center', justify: 'center', gap: 16 }, [
         button(t('Pre-Order on WhatsApp', 'تواصل واطلب عبر واتساب'), { url: waGeneral, external: true, variant: 'whatsapp', size: 'lg', icon: 'fab fa-whatsapp', cls: 'zayt-full-xs zayt-ic20' }),
-        button(t('Browse All Items', 'تصفح الأصناف'), { url: '#menu', variant: 'outlineDark', size: 'lg', cls: 'zayt-full-xs' }),
+        button(t('Browse All Items', 'تصفح الأصناف'), { url: A('#menu'), variant: 'outlineDark', size: 'lg', cls: 'zayt-full-xs' }),
       ]),
     ],
   });
@@ -468,7 +466,7 @@ function build(L) {
   // ================================================================ footer
   const fHead = (s, mb) => heading(s, { tag: 'h4', role: 'display', size: 16, weight: 600, lh: 1.5, color: '#FFFFFF', mb, cls: 'zayt-display' });
   const footer = box({
-    top: true, boxed: 1216, tag: 'footer', cls: `zayt${rtl}`, bg: '#1C1816', border: { w: dim(1, 0, 0, 0), color: '#292524' },
+    top: true, boxed: 1216, tag: 'footer', title: NT('Footer'), cls: `zayt zayt-sec${langCls}${rtl}`, bg: '#1C1816', border: { w: dim(1, 0, 0, 0), color: '#292524' },
     pad: [[64, 32, 48, 32], [64, 24, 48, 24], [64, 16, 48, 16]],
   }, [
     box({ cls: 'zayt-foot-grid', gap: [48, 40, 40], pad: [0, 0, 48, 0], border: { w: dim(0, 0, 1, 0), color: 'rgba(41,37,36,0.8)' } }, [
@@ -482,7 +480,7 @@ function build(L) {
       ]),
       box({ cls: 'zayt-span-2' }, [
         fHead(t('Quick Navigation', 'روابط سريعة'), 16),
-        htmlw(`<ul class="zayt-flinks">${NAV_LINKS.map((l) => `<li><a href="${l.href}">${esc(l.label[L])}</a></li>`).join('')}</ul>`),
+        htmlw(`<ul class="zayt-flinks">${NAV_LINKS.map((l) => `<li><a href="${A(l.href)}">${esc(l.label[L])}</a></li>`).join('')}</ul>`),
       ]),
       box({ cls: 'zayt-span-3' }, [
         fHead(t('Opening Times', 'ساعات العمل'), 16),
@@ -504,29 +502,88 @@ function build(L) {
   ]);
 
   // ================================================================ floating WhatsApp
-  const floating = box({ top: true, cls: `zayt zayt-float${rtl}`, dir: 'row', align: 'center', gap: 12 }, [
+  const floating = box({ top: true, title: NT('Floating WhatsApp'), cls: `zayt zayt-float zayt-sec${langCls}${rtl}`, dir: 'row', align: 'center', gap: 12 }, [
     htmlw(
       `<span class="zayt-float-pill">${esc(t('Chat with Zayt', 'تواصل معنا مباشرة'))}</span>` +
       `<a class="zayt-float-btn" href="${esc(waGeneral)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(t('Order or Reserve via WhatsApp', 'اطلب أو احجز عبر واتساب'))}" title="${esc(t('Order or Reserve via WhatsApp', 'اطلب أو احجز عبر واتساب'))}">${icon('message-circle', { size: 28, stroke: 2.2, fill: 'rgba(255,255,255,0.2)', color: '#FFFFFF' })}</a>`,
     ),
   ]);
 
-  return {
-    title: `Zayt Café — Home (${L.toUpperCase()})`,
-    type: 'page',
-    version: '0.4',
-    page_settings: { template: 'elementor_canvas', hide_title: 'yes' },
-    content: [assets, header, hero, features, featured, menu, about, gallery, testimonials, location, contact, cta, footer, floating],
-  };
+  return [header, hero, features, featured, menu, about, gallery, testimonials, location, contact, cta, footer, floating];
+}
+
+// ---------------------------------------------------------------- page assembly
+const FONTS_LINK =
+  `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>` +
+  `<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">`;
+const TITLES = { en: `${BRAND_CONFIG.nameEn} — ${BRAND_CONFIG.taglineEn}`, ar: `${BRAND_CONFIG.nameAr} — ${BRAND_CONFIG.taglineAr}` };
+// ZAYT_CFG is read by zayt.js. mode "single": one language per page. mode "bilingual": both in one page, switched in place.
+const cfgFor = (mode, lang) => `var ZAYT_CFG=${JSON.stringify({ mode, lang, paths: { en: LANG_URLS.en, ar: LANG_URLS.ar }, sfx: { en: '', ar: '-ar' }, titles: TITLES })};`;
+const assetsContainer = (mode, lang, { external = false } = {}) =>
+  box({ top: true, title: 'Zayt · CSS + JS + fonts (do not delete)', cls: 'zayt-assets', gap: 0 }, [
+    htmlw(external ? `<!-- zayt css/js are loaded site-wide (see snippet-assets.php) -->`
+      : `${FONTS_LINK}<style id="zayt-css">\n${css}\n</style>\n<script id="zayt-js">\n${cfgFor(mode, lang)}\n${js}\n</script>`, { title: '[CODE] Zayt CSS + JS' }),
+  ]);
+const pageWrap = (title, content) => ({ title, type: 'page', version: '0.4', page_settings: { template: 'elementor_canvas', hide_title: 'yes' }, content });
+
+function assemble(kind, { external = false } = {}) {
+  if (kind === 'bilingual') {
+    const en = build('en', { bilingual: true });
+    const ar = build('ar', { bilingual: true, keepIds: true });
+    resetIds('zayt-assets', true);
+    return pageWrap('Zayt Café — Home (EN + AR)', [assetsContainer('bilingual', 'en', { external }), ...en, ...ar]);
+  }
+  const sections = build(kind);
+  resetIds(`zayt-assets-${kind}`, true);
+  return pageWrap(`Zayt Café — Home (${kind.toUpperCase()})`, [assetsContainer('single', kind), ...sections]);
 }
 
 // ---------------------------------------------------------------- write outputs
 mkdirSync(OUT, { recursive: true });
-for (const L of ['en', 'ar']) {
-  const tpl = build(L);
-  writeFileSync(join(OUT, `zayt-home-${L}.json`), JSON.stringify(tpl, null, 2) + '\n');
-  console.log(`wrote zayt-home-${L}.json`);
-}
+// bilingual templates are written compact (~half the size) to stay well under typical PHP upload limits
+const write = (name, data, compact = false) => { writeFileSync(join(OUT, name), typeof data === 'string' ? data : JSON.stringify(data, null, compact ? 0 : 2) + '\n'); console.log('wrote', name); };
+write('zayt-home-bilingual.json', assemble('bilingual'), true);
+write('zayt-home-bilingual.external-assets.json', assemble('bilingual', { external: true }), true);
+for (const L of ['en', 'ar']) write(`zayt-home-${L}.json`, assemble(L));
+
+// WordPress-side PHP (paste into a snippets plugin or a child theme's functions.php)
+write('snippet-ar-route.php', `<?php
+/**
+ * Zayt Café — serve the bilingual home page at /ar/ as well as at /.
+ * zayt.js reads the path to pick the language and switches it in place with history.pushState.
+ */
+add_action('init', function () {
+    add_rewrite_rule('^ar/?$', 'index.php', 'top'); // static front page is resolved from an empty query
+});
+// WordPress would otherwise redirect /ar/ back to the front page URL.
+add_filter('redirect_canonical', function ($redirect_url, $requested_url) {
+    $path = trailingslashit((string) wp_parse_url($requested_url, PHP_URL_PATH));
+    return substr($path, -4) === '/ar/' ? false : $redirect_url;
+}, 10, 2);
+// Flush the rewrite rules once (instead of on every request).
+add_action('init', function () {
+    if (get_option('zayt_ar_route') !== '1') {
+        flush_rewrite_rules();
+        update_option('zayt_ar_route', '1');
+    }
+}, 99);
+`);
+write('snippet-assets.php', `<?php
+/**
+ * Zayt Café — site-wide CSS/JS/fonts. Use with zayt-home-bilingual.external-assets.json
+ * (so the page does not depend on an HTML widget that an editor could delete).
+ */
+add_action('wp_head', function () {
+    echo '${FONTS_LINK.replace(/'/g, "\\'")}';
+    echo '<style id="zayt-css">' . <<<'ZAYT_CSS'
+${css}
+ZAYT_CSS . '</style>';
+    echo '<script id="zayt-js">' . <<<'ZAYT_JS'
+${cfgFor('bilingual', 'en')}
+${js}
+ZAYT_JS . '</script>';
+}, 5);
+`);
 
 // image manifest: what to upload to the Media Library and which key to map it to (--media-map)
 function jpegSize(buf) {
