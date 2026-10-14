@@ -1,0 +1,45 @@
+{
+  "note": "Upload these files to the WordPress Media Library, then rebuild with --media-map to bind them: {\"heroInterior\":{\"url\":\"https://…/file.jpg\",\"id\":123}, …}",
+  "images": [
+    {
+      "key": "heroInterior",
+      "sourceFile": "src/assets/images/zayt_hero_interior_1791134628326.jpg",
+      "height": 768,
+      "width": 1376,
+      "bytes": 880928,
+      "importUrl": "https://raw.githubusercontent.com/yamilheredia7970-cmd/Zayt-Caf-/main/src/assets/images/zayt_hero_interior_1791134628326.jpg"
+    },
+    {
+      "key": "pistachioLatte",
+      "sourceFile": "src/assets/images/zayt_pistachio_latte_1791134643981.jpg",
+      "height": 896,
+      "width": 1200,
+      "bytes": 714971,
+      "importUrl": "https://raw.githubusercontent.com/yamilheredia7970-cmd/Zayt-Caf-/main/src/assets/images/zayt_pistachio_latte_1791134643981.jpg"
+    },
+    {
+      "key": "cardamomPastry",
+      "sourceFile": "src/assets/images/zayt_cardamom_pastry_1791134660260.jpg",
+      "height": 896,
+      "width": 1200,
+      "bytes": 936153,
+      "importUrl": "https://raw.githubusercontent.com/yamilheredia7970-cmd/Zayt-Caf-/main/src/assets/images/zayt_cardamom_pastry_1791134660260.jpg"
+    },
+    {
+      "key": "zaatarFocaccia",
+      "sourceFile": "src/assets/images/zayt_zaatar_focaccia_1791134672837.jpg",
+      "height": 896,
+      "width": 1200,
+      "bytes": 924729,
+      "importUrl": "https://raw.githubusercontent.com/yamilheredia7970-cmd/Zayt-Caf-/main/src/assets/images/zayt_zaatar_focaccia_1791134672837.jpg"
+    },
+    {
+      "key": "terraceExterior",
+      "sourceFile": "src/assets/images/zayt_terrace_exterior_1791134689840.jpg",
+      "height": 896,
+      "width": 1200,
+      "bytes": 988542,
+      "importUrl": "https://raw.githubusercontent.com/yamilheredia7970-cmd/Zayt-Caf-/main/src/assets/images/zayt_terrace_exterior_1791134689840.jpg"
+    }
+  ]
+}
